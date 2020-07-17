@@ -44,7 +44,16 @@ router.get('/log', async (req, res) => {
 
     const exercises = await (limit ? query.limit(Number(limit)) : query);
 
-    res.json(exercises);
+    const user = await User.findOne({ _id: userId });
+
+    const response = {
+      log: exercises,
+      count: exercises.length,
+      _id: user._id,
+      username: user.username,
+    };
+
+    res.json(response);
   } catch (error) {
     console.error(error);
     res.json(error);
@@ -64,8 +73,7 @@ router.post('/add', async (req, res) => {
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
-      { $push: { exercises: exercise._id } },
-      { returnOriginal: false }
+      { $push: { log: exercise._id } }
     );
 
     res.json({

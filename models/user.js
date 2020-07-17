@@ -6,7 +6,7 @@ const schema = new Schema({
     required: true,
     unique: true,
   },
-  exercises: [
+  log: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Exercise',
