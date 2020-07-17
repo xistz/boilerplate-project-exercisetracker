@@ -55,19 +55,26 @@ router.post('/add', async (req, res) => {
   const { userId, description, duration, date } = req.body;
 
   try {
-    await Exercise.create({
+    const exercise = await Exercise.create({
       user: userId,
       description: description,
       duration: duration,
       ...(date && { date: new Date(date) }),
     });
 
-    const exercises = await Exercise.find(
-      { user: userId },
-      '_id description duration date'
-    ).sort({ date: -1 });
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { exercises: exercise._id } },
+      { returnOriginal: false }
+    );
 
-    res.json(exercises);
+    res.json({
+      username: user.username,
+      _id: user._id,
+      description: exercise.description,
+      duration: exercise.duration,
+      date: new Date(exercise.date).toDateString(),
+    });
   } catch (error) {
     console.error(error);
     res.json(error);
